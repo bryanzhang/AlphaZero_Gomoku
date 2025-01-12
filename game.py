@@ -224,9 +224,15 @@ class Game(object):
                 loc = i * width + j
                 p = board.states.get(loc, -1)
                 if p == player1:
-                    print('X'.center(8), end='')
+                    if loc == board.last_move:
+                      print('X'.center(8), end='')
+                    else:
+                      print('x'.center(8), end='')
                 elif p == player2:
-                    print('O'.center(8), end='')
+                    if loc == board.last_move:
+                      print('O'.center(8), end='')
+                    else:
+                      print('o'.center(8), end='')
                 else:
                     print('_'.center(8), end='')
             print('\r\n\r\n')

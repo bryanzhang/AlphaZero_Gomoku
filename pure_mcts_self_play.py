@@ -53,7 +53,7 @@ class Human(object):
 
 def run():
     n = 5
-    width, height = 8, 8
+    width, height = 8,8
     try:
         board = Board(width=width, height=height, n_in_row=n)
         game = Game(board)
@@ -71,10 +71,10 @@ def run():
         #                         n_playout=400)  # set larger n_playout for better performance
 
         # uncomment the following line to play with pure MCTS (it's much weaker even with a larger n_playout)
-        mcts_player = MCTS_Pure(c_puct=5, n_playout=1000)
+        mcts_player = MCTS_Pure(c_puct=5, n_playout=16000)
 
         # human player, input your move in the format: 2,3
-        human = MCTS_Pure(c_puct=5, n_playout=1000)
+        human = MCTS_Pure(c_puct=5, n_playout=16000)
 
         # set start_player=0 for human first
         _, steps = game.start_play(human, mcts_player, start_player=1, is_shown=1)

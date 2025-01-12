@@ -50,7 +50,7 @@ class Human(object):
 
 def run():
     n = 5
-    width, height = 8, 8
+    width, height = 15,15
     model_file = 'best_policy_8_8_5.model'
     try:
         board = Board(width=width, height=height, n_in_row=n)
@@ -74,7 +74,7 @@ def run():
         #                         n_playout=400)  # set larger n_playout for better performance
 
         # uncomment the following line to play with pure MCTS (it's much weaker even with a larger n_playout)
-        mcts_player = MCTS_Pure(c_puct=5, n_playout=1000)
+        mcts_player = MCTS_Pure(c_puct=5, n_playout=4000)
 
         # human player, input your move in the format: 2,3
         human = Human()
