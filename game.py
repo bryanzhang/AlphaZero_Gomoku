@@ -94,48 +94,51 @@ class Board(object):
         if m == -1:
             return False, -1
 
-        moved = list(set(range(width * height)) - set(self.availables))
-        if len(moved) < self.n_in_row *2-1:
-            return False, -1
+#        moved = list(set(range(width * height)) - set(self.availables))
+#        if len(moved) < self.n_in_row *2-1:
+#            return False, -1
+        if width * height - len(self.availables) < self.n_in_row * 2 - 1:
+           return False, -1
 
         y = m // width
         x = m % width
         player = states[m]
 
         # 横向
-        i = 0
+        i = 1
         while x - i >= 0 and states.get(m - i, -1) == player:
             i += 1
-        j = 0
+        j = 1
         while x + j < width and states.get(m + j, -1) == player:
             j += 1
         if i + j - 1 >= n:
             return True, player
 
         # 竖向
-        i = 0
+        i = 1
         while y - i >= 0 and states.get(m - i * width, -1) == player:
             i += 1
-        j = 0
+        j = 1
         while y + j < height and states.get(m + j * width, -1) == player:
             j += 1
         if i + j - 1 >= n:
            return True, player
 
         # 斜向1
-        i = 0
+        i = 1
         while x - i >= 0 and y - i >= 0 and states.get(m - i * (width + 1), -1) == player:
             i += 1
-        j = 0
+        j = 1
         while x + j < width and y + j < height and states.get(m + j * (width + 1), -1) == player:
             j += 1
         if i + j - 1 >= n:
             return True, player
 
         # 斜向2
+        i = 1
         while x - i >= 0 and y + i < height and states.get(m + i * (width - 1), -1) == player:
             i += 1
-        j = 0
+        j = 1
         while x + j < width and y - j >= 0 and states.get(m - j * (width - 1), -1) == player:
             j += 1
         if i + j - 1 >= n:

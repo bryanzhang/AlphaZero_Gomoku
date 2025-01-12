@@ -16,7 +16,7 @@ def rollout_policy_fn(board):
     """a coarse, fast version of policy_fn used in the rollout phase."""
     # rollout randomly
     action_probs = np.random.rand(len(board.availables))
-    return zip(board.availables, action_probs)
+    return board.availables, action_probs
 
 
 def policy_value_fn(board):
@@ -54,8 +54,23 @@ class TreeNode(object):
         plus bonus u(P).
         Return: A tuple of (action, next_node)
         """
-        return max(self._children.items(),
-                   key=lambda act_node: act_node[1].get_value(c_puct))
+        #return max(self._children.items(),
+        #           key=lambda act_node: act_node[1].get_value(c_puct))
+        children = list(self._children.items())
+        actions = [action for action, node in children]
+        nodes = [node for action, node in children]
+
+        P_array = np.array([node._P for node in nodes], dtype = np.float32)
+        Q_array = np.array([node._Q for node in nodes], dtype = np.float32)
+        n_visits_array = np.array([node._n_visits for node in nodes], dtype = np.float32)
+        parent_n_visits = self._n_visits
+        u_array = (c_puct * P_array * np.sqrt(parent_n_visits)) / (1 + n_visits_array)
+        values = Q_array + u_array
+        max_index = np.argmax(values)
+        best_action = actions[max_index]
+        best_node = nodes[max_index]
+
+        return best_action, best_node
 
     def update(self, leaf_value):
         """Update node values from leaf evaluation.
@@ -148,8 +163,10 @@ class MCTS(object):
             end, winner = state.game_end2()
             if end:
                 break
-            action_probs = rollout_policy_fn(state)
-            max_action = max(action_probs, key=itemgetter(1))[0]
+            actions, action_probs = rollout_policy_fn(state)
+            #max_action = max(action_probs, key=itemgetter(1))[0]
+            max_index = np.argmax(action_probs)
+            max_action = actions[max_index]
             state.do_move(max_action)
         else:
             # If no break from the loop, issue a warning.
