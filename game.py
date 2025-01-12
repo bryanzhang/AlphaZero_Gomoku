@@ -20,6 +20,7 @@ class Board(object):
         # need how many pieces in a row to win
         self.n_in_row = int(kwargs.get('n_in_row', 5))
         self.players = [1, 2]  # player1 and player2
+        self.last_move = -1
 
     def init_board(self, start_player=0):
         if self.width < self.n_in_row or self.height < self.n_in_row:
@@ -83,6 +84,65 @@ class Board(object):
         )
         self.last_move = move
 
+    def has_a_winner2(self):
+        width = self.width
+        height = self.height
+        states = self.states
+        n = self.n_in_row
+
+        m = self.last_move
+        if m == -1:
+            return False, -1
+
+        moved = list(set(range(width * height)) - set(self.availables))
+        if len(moved) < self.n_in_row *2-1:
+            return False, -1
+
+        y = m // width
+        x = m % width
+        player = states[m]
+
+        # 横向
+        i = 0
+        while x - i >= 0 and states.get(m - i, -1) == player:
+            i += 1
+        j = 0
+        while x + j < width and states.get(m + j, -1) == player:
+            j += 1
+        if i + j - 1 >= n:
+            return True, player
+
+        # 竖向
+        i = 0
+        while y - i >= 0 and states.get(m - i * width, -1) == player:
+            i += 1
+        j = 0
+        while y + j < height and states.get(m + j * width, -1) == player:
+            j += 1
+        if i + j - 1 >= n:
+           return True, player
+
+        # 斜向1
+        i = 0
+        while x - i >= 0 and y - i >= 0 and states.get(m - i * (width + 1), -1) == player:
+            i += 1
+        j = 0
+        while x + j < width and y + j < height and states.get(m + j * (width + 1), -1) == player:
+            j += 1
+        if i + j - 1 >= n:
+            return True, player
+
+        # 斜向2
+        while x - i >= 0 and y + i < height and states.get(m + i * (width - 1), -1) == player:
+            i += 1
+        j = 0
+        while x + j < width and y - j >= 0 and states.get(m - j * (width - 1), -1) == player:
+            j += 1
+        if i + j - 1 >= n:
+            return True, player
+
+        return False, -1
+
     def has_a_winner(self):
         width = self.width
         height = self.height
@@ -119,6 +179,15 @@ class Board(object):
     def game_end(self):
         """Check whether the game is ended or not"""
         win, winner = self.has_a_winner()
+        if win:
+            return True, winner
+        elif not len(self.availables):
+            return True, -1
+        return False, -1
+
+    def game_end2(self):
+        """Check whether the game is ended or not"""
+        win, winner = self.has_a_winner2()
         if win:
             return True, winner
         elif not len(self.availables):
@@ -171,11 +240,13 @@ class Game(object):
         players = {p1: player1, p2: player2}
         if is_shown:
             self.graphic(self.board, player1.player, player2.player)
+        steps = 0
         while True:
             current_player = self.board.get_current_player()
             player_in_turn = players[current_player]
             move = player_in_turn.get_action(self.board)
             self.board.do_move(move)
+            steps += 1
             if is_shown:
                 self.graphic(self.board, player1.player, player2.player)
             end, winner = self.board.game_end()
@@ -185,7 +256,7 @@ class Game(object):
                         print("Game end. Winner is", players[winner])
                     else:
                         print("Game end. Tie")
-                return winner
+                return winner, steps
 
     def start_self_play(self, player, is_shown=0, temp=1e-3):
         """ start a self-play game using a MCTS player, reuse the search tree,

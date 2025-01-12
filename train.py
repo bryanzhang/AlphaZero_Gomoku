@@ -153,7 +153,7 @@ class TrainPipeline():
                                      n_playout=self.pure_mcts_playout_num)
         win_cnt = defaultdict(int)
         for i in range(n_games):
-            winner = self.game.start_play(current_mcts_player,
+            winner, _ = self.game.start_play(current_mcts_player,
                                           pure_mcts_player,
                                           start_player=i % 2,
                                           is_shown=0)

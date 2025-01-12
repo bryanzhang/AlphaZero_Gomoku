@@ -119,6 +119,7 @@ class MCTS(object):
         State is modified in-place, so a copy must be provided.
         """
         node = self._root
+        action = state.last_move
         while(1):
             if node.is_leaf():
 
@@ -129,22 +130,22 @@ class MCTS(object):
 
         action_probs, _ = self._policy(state)
         # Check for end of game
-        end, winner = state.game_end()
+        end, winner = state.game_end2()
         if not end:
             node.expand(action_probs)
         # Evaluate the leaf node by random rollout
-        leaf_value = self._evaluate_rollout(state)
+        leaf_value = self._evaluate_rollout(state, winner)
         # Update value and visit count of nodes in this traversal.
         node.update_recursive(-leaf_value)
 
-    def _evaluate_rollout(self, state, limit=1000):
+    def _evaluate_rollout(self, state, pre_winner, limit=1000):
         """Use the rollout policy to play until the end of the game,
         returning +1 if the current player wins, -1 if the opponent wins,
         and 0 if it is a tie.
         """
         player = state.get_current_player()
         for i in range(limit):
-            end, winner = state.game_end()
+            end, winner = state.game_end2()
             if end:
                 break
             action_probs = rollout_policy_fn(state)
