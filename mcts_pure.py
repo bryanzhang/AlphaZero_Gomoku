@@ -1,3 +1,5 @@
+#! /usr/bin/python3
+
 # -*- coding: utf-8 -*-
 """
 A pure implementation of the Monte Carlo Tree Search (MCTS)

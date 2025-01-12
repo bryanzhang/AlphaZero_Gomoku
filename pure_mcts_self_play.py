@@ -77,7 +77,7 @@ def run():
         mcts_player = MCTS_Pure(c_puct=5, n_playout=1000)
 
         # human player, input your move in the format: 2,3
-        human = Human()
+        human = MCTS_Pure(c_puct=5, n_playout=1000)
 
         # set start_player=0 for human first
         game.start_play(human, mcts_player, start_player=1, is_shown=1)
